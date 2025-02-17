@@ -16,6 +16,7 @@ use crate::{
     dram::DRAM_SIZE,
     exception::Exception,
     interrupt::Interrupt,
+    interval::Interval32,
 };
 
 /// The number of registers.
@@ -1326,6 +1327,30 @@ impl Cpu {
 
         // 3. Execute.
         match opcode {
+            0b00_010_11 => {
+                // custom-0 opcode area.
+                // Zfintf extension
+                let rm = funct3;
+                let fmt = funct7 & 0b11;
+                let funct5 = funct7 >> 2;
+
+                match funct5 {
+                    // TODO: This should be 00000
+                    0b00001 => {
+                        inst_count!(self, "instadd.s");
+                        self.debug(inst, "instadd.s");
+
+                        let a = Interval32::unpack(self.fregs.read(rs1));
+                        let b = Interval32::unpack(self.fregs.read(rs2));
+                        let c = a + b;
+
+                        self.fregs.write(rd, c.pack());
+                    }
+                    _ => {
+                        return Err(Exception::IllegalInstruction(inst));
+                    }
+                }
+            }
             0x03 => {
                 // RV32I and RV64I
                 // imm[11:0] = inst[31:20]

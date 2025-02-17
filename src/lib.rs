@@ -31,6 +31,7 @@
 //! See the example usage in
 //! [rvemu/lib/rvemu-cli/src/main.rs](https://github.com/d0iasm/rvemu/blob/master/lib/rvemu-cli/src/main.rs).
 
+pub mod interval;
 pub mod bus;
 pub mod cpu;
 pub mod csr;
